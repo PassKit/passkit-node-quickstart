@@ -1,0 +1,27 @@
+{
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es2021": true,
+    "jest/globals": true
+  },
+  "extends": ["prettier", "airbnb-base"],
+  "parserOptions": {
+    "ecmaVersion": 12
+  },
+  "plugins": ["prettier", "jest"],
+  "rules": {
+    "prettier/prettier": "error",
+    "quotes": [2, "double", "avoid-escape"],
+    "no-console": "off",
+    "max-classes-per-file": ["error", 10],
+    "comma-dangle": 0,
+    "jest/no-disabled-tests": "warn",
+    "jest/no-focused-tests": "error",
+    "jest/no-identical-title": "error",
+    "jest/prefer-to-have-length": "off",
+    "jest/valid-expect": "error",
+    "class-methods-use-this": "off",
+    "func-names": "off"
+  }
+}
