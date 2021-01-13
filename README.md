@@ -40,4 +40,4 @@ The tests will then delete and clean-up all assets that it created.
 
 For implementing in your own projects, use the PassKitClient class to manage connection to the PassKit gRPC endpoints.
 
-The quickstart uses the PassKit official node sdk found here: https://www.npmjs.com/package/@passkit/node-sdk
+The quickstart uses the PassKit official node sdk found here: https://www.npmjs.com/package/passkit-node-sdk
