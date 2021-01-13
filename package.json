@@ -5,8 +5,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "test": "jest",
-    "openssl": "cd src/certs && openssl ec -in key.pem -out key.pem"
+    "test": "jest"
   },
   "jest": {
     "verbose": true

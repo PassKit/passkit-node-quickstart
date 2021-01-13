@@ -10,37 +10,37 @@ const grpc = require("grpc");
 const {
   UsersClient,
 } = require("passkit-node-sdk/io/core/a_rpc_others_grpc_pb");
-
-const ROOT_CERT = "./src/certs/ca-chain.pem";
-const PRIVATE_KEY = "./src/certs/key.pem";
-const CERTIFICATE = "./src/certs/certificate.pem";
-const ADDRESS = "grpc.pub1.passkit.io";
-const PORT = 443;
+const crypto = require("crypto");
+const config = require("../config/config");
 
 class PassKitClient {
   constructor() {
+    const privateKeyEncBytes = fs.readFileSync(config.PRIVATE_KEY);
+    const privateKey = crypto.createPrivateKey({
+      cypher: "aes-256-cbc",
+      format: "pem",
+      key: privateKeyEncBytes,
+      passphrase: config.PASSPHRASE,
+      type: "pkcs8",
+    });
+
     const channelCredential = grpc.credentials.createSsl(
-      fs.readFileSync(ROOT_CERT),
-      fs.readFileSync(PRIVATE_KEY),
-      fs.readFileSync(CERTIFICATE)
+      fs.readFileSync(config.ROOT_CERT),
+      Buffer.from(
+        privateKey.export({ format: "pem", type: "pkcs8" }).toString()
+      ),
+      fs.readFileSync(config.CERTIFICATE)
     );
 
-    this.userClient = new UsersClient(`${ADDRESS}:${PORT}`, channelCredential);
+    const grpcAddress = `${config.ADDRESS}:${config.PORT}`;
 
-    this.templateClient = new TemplatesClient(
-      `${ADDRESS}:${PORT}`,
-      channelCredential
-    );
+    this.userClient = new UsersClient(grpcAddress, channelCredential);
 
-    this.membersClient = new MembersClient(
-      `${ADDRESS}:${PORT}`,
-      channelCredential
-    );
+    this.templateClient = new TemplatesClient(grpcAddress, channelCredential);
 
-    this.imageClient = new ImagesClient(
-      `${ADDRESS}:${PORT}`,
-      channelCredential
-    );
+    this.membersClient = new MembersClient(grpcAddress, channelCredential);
+
+    this.imageClient = new ImagesClient(grpcAddress, channelCredential);
   }
 
   getTemplateClient() {

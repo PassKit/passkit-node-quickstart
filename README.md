@@ -12,7 +12,7 @@ You will need the following:
 
 - A PassKit account (signup for free at https://app.passkit.com)
 - Your PassKit SDK Credentials (available from the https://app.passkit.com/app/account/developer-tools)
-- Nodejs 10 or above (https://nodejs.org/en/)
+- Nodejs 11.6.0 or above (https://nodejs.org/en/)
 
 ### Configuration
 
@@ -24,7 +24,7 @@ You will need the following:
    - ca-chain.pem
    - key.pem
 
-3. Run `npm run openssl` and provide your account password in the terminal prompt.
+3. Add your account password into the `src/config/config.js` PASSPHRASE variable
 
 4. If you wish to receive enrolment emails, edit lines 281 and 307 of the QuickStartLoyalty class to provide an address where you can receive mail.
 
