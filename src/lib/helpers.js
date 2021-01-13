@@ -1,6 +1,9 @@
-exports.templateResponse = function (template) {
-  this.bronzeTemplate = template;
+exports.createSilverResponse = function (template) {
   this.silverTemplate = template;
+};
+
+exports.createBronzeResponse = function (template) {
+  this.bronzeTemplate = template;
 };
 
 exports.bronzeTemplateResponse = function (id) {

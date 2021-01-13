@@ -40,6 +40,8 @@ The tests will display URLs to the generated passes and to the enrolment page. I
 
 The tests will then delete and clean-up all assets that it created.
 
+If you don't want you assets to be deleted, comment out lines 10 - 12 in the `test/quick-start-loyalty.test.js` file.
+
 ### Notes
 
 For implementing in your own projects, use the PassKitClient class to manage connection to the PassKit gRPC endpoints.

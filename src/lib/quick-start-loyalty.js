@@ -62,8 +62,10 @@ class QuickStartLoyalty {
       imageData.setIcon(icon).setLogo(logo).setHero(hero).setStrip(strip);
 
       await this.createImages(imageData);
-      await this.getDefaultTemplate();
-      this.prepTemplates();
+      await this.getBronzeTemplate();
+      await this.getSilverTemplate();
+      this.prepBronzeTemplate();
+      this.prepSilverTemplate();
       await this.createBronzeTemplate();
       await this.createSilverTemplate();
       await this.createProgram();
@@ -116,12 +118,12 @@ class QuickStartLoyalty {
     });
   }
 
-  getDefaultTemplate() {
-    console.log("Getting default template");
+  getBronzeTemplate() {
+    console.log("Getting bronze template");
     const request = new DefaultTemplateRequest();
     request.setProtocol(PassProtocol.MEMBERSHIP);
     request.setRevision(1);
-    const callback = helper.templateResponse.bind(this);
+    const callback = helper.createBronzeResponse.bind(this);
 
     return new Promise((resolve, reject) => {
       this.pkClient
@@ -135,26 +137,54 @@ class QuickStartLoyalty {
     });
   }
 
-  prepTemplates() {
-    console.log("Prepping templates");
+  getSilverTemplate() {
+    console.log("Getting silver template");
+    const request = new DefaultTemplateRequest();
+    request.setProtocol(PassProtocol.MEMBERSHIP);
+    request.setRevision(1);
+    const callback = helper.createSilverResponse.bind(this);
+
+    return new Promise((resolve, reject) => {
+      this.pkClient
+        .getTemplateClient()
+        .getDefaultTemplate(request, (err, response) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(callback(response));
+        });
+    });
+  }
+
+  prepSilverTemplate() {
+    console.log("Prepping silver template");
+
+    this.silverTemplate
+      .setName("Quickstart Silver Tier")
+      .setDescription("Quickstart Silver Tier Pass")
+      .setTimezone("Europe/London")
+      .setImageids(this.imageIds)
+      .clearImages()
+      .getColors()
+      .setBackgroundcolor("#C0C0C0");
+  }
+
+  prepBronzeTemplate() {
+    console.log("Prepping bronze template");
     this.bronzeTemplate
       .setName("Quickstart Bronze Tier")
       .setDescription("Quickstart Bronze Tier Pass")
       .setTimezone("Europe/London")
       .setImageids(this.imageIds)
-      .clearImages();
-
-    this.bronzeTemplate
-      .setName("Quickstart Silver Tier")
-      .setDescription("Quickstart Silver Tier Pass")
-      .setTimezone("Europe/London")
-      .setImageids(this.imageIds)
-      .clearImages();
+      .clearImages()
+      .getColors()
+      .setBackgroundcolor("#cd7f32");
   }
 
   createBronzeTemplate() {
     console.log("Creating bronze template");
     const callback = helper.bronzeTemplateResponse.bind(this);
+    console.log(this.bronzeTemplate.toObject());
 
     return new Promise((resolve, reject) => {
       this.pkClient
@@ -189,7 +219,7 @@ class QuickStartLoyalty {
     const callback = helper.programResponse.bind(this);
     const program = new Program();
     program
-      .setName("Quickstart Loyalty Program")
+      .setName("Quickstart Loyalty Program Test")
       .addStatus(ProjectStatus.PROJECT_DRAFT)
       .addStatus(ProjectStatus.PROJECT_ACTIVE_FOR_OBJECT_CREATION)
       .setPointstype(
@@ -247,7 +277,7 @@ class QuickStartLoyalty {
   }
 
   createSilverTier() {
-    console.log("Creating silver template");
+    console.log("Creating silver tier");
     const callback = helper.silverTierResponse.bind(this);
     const tier = new Tier();
     tier
@@ -299,7 +329,7 @@ class QuickStartLoyalty {
     const callback = helper.createSilverMemberResponse.bind(this);
     const member = new Member();
     member
-      .setTierid(this.bronzeTierId)
+      .setTierid(this.silverTierId)
       .setProgramid(this.programId)
       .setPerson(
         new Person()
