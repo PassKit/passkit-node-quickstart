@@ -6,7 +6,7 @@
   "license": "ISC",
   "scripts": {
     "test": "jest",
-    "decrypt": "cd src/certs && openssl ec -in key.pem -out key.pem"
+    "openssl": "cd src/certs && openssl ec -in key.pem -out key.pem"
   },
   "jest": {
     "verbose": true

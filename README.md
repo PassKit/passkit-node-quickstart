@@ -16,17 +16,19 @@ You will need the following:
 
 ### Configuration
 
-1. Download or clone this quickstart repository, create a folder `src/certs` and add the following three PassKit credential files:
+1. Download or clone this quickstart repository.
+
+2. Create a new folder inside `src` called `certs` and add the following three PassKit credential files into it. Files can be found in the sdk credentials email you receive on signup:
 
    - certificate.pem
    - ca-chain.pem
    - key.pem
 
-2. Run `npm run decrypt` and provide your account password in the terminal prompt.
+3. Run `npm run openssl` and provide your account password in the terminal prompt.
 
-3. If you wish to receive enrolment emails, edit lines 281 and 307 of the QuickStartLoyalty class to provide an address where you can receive mail.
+4. If you wish to receive enrolment emails, edit lines 281 and 307 of the QuickStartLoyalty class to provide an address where you can receive mail.
 
-4. Run `npm i`
+5. Run `npm i`
 
 ### Running the tests
 
