@@ -26,6 +26,8 @@ You will need the following:
 
 3. If you wish to receive enrolment emails, edit lines 281 and 307 of the QuickStartLoyalty class to provide an address where you can receive mail.
 
+4. Run `npm i`
+
 ### Running the tests
 
 Run `npm run test`
