@@ -5,14 +5,15 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "decrypt": "cd src/certs && openssl ec -in key.pem -out key.pem"
   },
   "jest": {
     "verbose": true
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.1.0",
-    "@passkit/node-sdk": "^1.1.0",
+    "passkit-node-sdk": "^1.0.3",
     "async": "^1.5.2",
     "google-protobuf": "^3.14.0",
     "grpc": "^1.24.4",

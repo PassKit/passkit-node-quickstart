@@ -1,29 +1,29 @@
-const { ProjectStatus } = require("@passkit/node-sdk/io/common/project_pb");
+const { ProjectStatus } = require("passkit-node-sdk/io/common/project_pb");
 const {
   DefaultTemplateRequest,
   PassTemplate,
   PassProtocol,
-} = require("@passkit/node-sdk/io/common/template_pb");
-const { MemberEvent } = require("@passkit/node-sdk/io/member/member_events_pb");
+} = require("passkit-node-sdk/io/common/template_pb");
+const { MemberEvent } = require("passkit-node-sdk/io/member/member_events_pb");
 const {
   EarnBurnPointsRequest,
   Member,
   MemberCheckInOutRequest,
-} = require("@passkit/node-sdk/io/member/member_pb");
+} = require("passkit-node-sdk/io/member/member_pb");
 const {
   BalanceType,
   PointsType,
   Program,
-} = require("@passkit/node-sdk/io/member/program_pb");
-const { Tier } = require("@passkit/node-sdk/io/member/tier_pb");
-const Common = require("@passkit/node-sdk/io/common/common_objects_pb");
+} = require("passkit-node-sdk/io/member/program_pb");
+const { Tier } = require("passkit-node-sdk/io/member/tier_pb");
+const Common = require("passkit-node-sdk/io/common/common_objects_pb");
 const {
   ImageData,
   ImageIds,
   CreateImageInput,
-} = require("@passkit/node-sdk/io/image/image_pb");
+} = require("passkit-node-sdk/io/image/image_pb");
 const imageToBase64 = require("image-to-base64");
-const { Person } = require("@passkit/node-sdk/io/common/personal_pb");
+const { Person } = require("passkit-node-sdk/io/common/personal_pb");
 
 const PassKitGRPC = require("./client");
 const helper = require("./helpers");

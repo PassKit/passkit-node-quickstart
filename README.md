@@ -22,10 +22,9 @@ You will need the following:
    - ca-chain.pem
    - key.pem
 
-   You will need to decrypt your key using ssl. You can use this command:
-   `openssl ec -in key.pem -out key.pem`
+2. Run `npm run decrypt` and provide your account password in the terminal prompt.
 
-2. If you wish to receive enrolment emails, edit lines 281 and 307 of the QuickStartLoyalty class to provide an address where you can receive mail.
+3. If you wish to receive enrolment emails, edit lines 281 and 307 of the QuickStartLoyalty class to provide an address where you can receive mail.
 
 ### Running the tests
 
@@ -33,7 +32,7 @@ Run `npm run test`
 
 The Loyalty tests will create a membership program with 2 tiers, 1 member and two member events.
 
-The tests will display URLs to the generated passes and to the enrolment page. It will pause for a period determined in the test file on line 6.
+The tests will display URLs to the generated passes and to the enrolment page. It will pause for a period determined in the test file on line 64.
 
 The tests will then delete and clean-up all assets that it created.
 

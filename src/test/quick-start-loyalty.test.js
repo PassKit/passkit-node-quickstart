@@ -2,26 +2,13 @@ const QuickStartLoyalty = require("../lib/quick-start-loyalty");
 
 const quickStart = new QuickStartLoyalty();
 
-// Test will hang for one minute so you can check urls
-jest.setTimeout(60000);
+// Test will hang for two minutes so you can check urls
+jest.setTimeout(120000);
 
 beforeAll(async () => quickStart.runQuickStart());
 
 afterAll(async () => {
-  console.log(
-    "Enrollment URL: ",
-    `https://pub1.pskt.io/c/${quickStart.shortCode}`
-  );
-  console.log(
-    "Bronze Pass Url: ",
-    `https://pub1.pskt.io/${quickStart.bronzeMemberId}`
-  );
-  console.log(
-    "Silver Pass Url: ",
-    `https://pub1.pskt.io/${quickStart.silverMemberId}`
-  );
-
-  // quickStart.cleanUp();
+  await quickStart.cleanUp();
 });
 
 describe("quick start loyalty", () => {
@@ -56,5 +43,24 @@ describe("quick start loyalty", () => {
 
   it("has event assets", () => {
     expect(quickStart.checkInEvent).toBeTruthy();
+  });
+
+  it("shows urls", async () => {
+    console.log(
+      "Enrollment URL: ",
+      `https://pub1.pskt.io/c/${quickStart.shortCode}`
+    );
+    console.log(
+      "Bronze Pass Url: ",
+      `https://pub1.pskt.io/${quickStart.bronzeMemberId}`
+    );
+    console.log(
+      "Silver Pass Url: ",
+      `https://pub1.pskt.io/${quickStart.silverMemberId}`
+    );
+
+    console.log("Data will be removed in 1 minutes");
+
+    await new Promise((r) => setTimeout(r, 60000));
   });
 });

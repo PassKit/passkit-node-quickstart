@@ -1,15 +1,15 @@
 const {
   TemplatesClient,
-} = require("@passkit/node-sdk/io/core/a_rpc_templates_grpc_pb");
+} = require("passkit-node-sdk/io/core/a_rpc_templates_grpc_pb");
 const {
   ImagesClient,
-} = require("@passkit/node-sdk/io/core/a_rpc_images_grpc_pb");
-const { MembersClient } = require("@passkit/node-sdk/io/member/a_rpc_grpc_pb");
+} = require("passkit-node-sdk/io/core/a_rpc_images_grpc_pb");
+const { MembersClient } = require("passkit-node-sdk/io/member/a_rpc_grpc_pb");
 const fs = require("fs");
 const grpc = require("grpc");
 const {
   UsersClient,
-} = require("@passkit/node-sdk/io/core/a_rpc_others_grpc_pb");
+} = require("passkit-node-sdk/io/core/a_rpc_others_grpc_pb");
 
 const ROOT_CERT = "./src/certs/ca-chain.pem";
 const PRIVATE_KEY = "./src/certs/key.pem";
