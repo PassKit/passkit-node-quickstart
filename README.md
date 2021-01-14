@@ -25,7 +25,7 @@ You will need the following:
    - ca-chain.pem
    - key.pem
 
-3. Add your account password into the `src/config/config.js` PASSPHRASE variable
+3. Add the on time password you used to generate your SDK credentials into the `src/config/config.js` PASSPHRASE variable
 
 4. If you wish to receive enrolment emails, edit lines 281 and 307 of the QuickStartLoyalty class to provide an address where you can receive mail.
 
