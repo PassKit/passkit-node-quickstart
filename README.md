@@ -1,6 +1,7 @@
 # PassKit Node Quickstart
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![NPM](https://img.shields.io/npm/v/passkit-node-sdk)](https://www.npmjs.com/package/passkit-node-sdk)
 
 ### Overview
 
@@ -34,7 +35,7 @@ You will need the following:
 
 Run `npm run test`
 
-The Loyalty tests will create a membership program with 2 tiers, 1 member and two member events.
+The Loyalty tests will create a membership program with 2 tiers, 2 members and 3 member events.
 
 The tests will display URLs to the generated passes and to the enrolment page. It will pause for a period determined in the test file on line 64.
 
