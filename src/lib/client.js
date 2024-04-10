@@ -6,7 +6,7 @@ const {
 } = require("passkit-node-sdk/io/core/a_rpc_images_grpc_pb");
 const { MembersClient } = require("passkit-node-sdk/io/member/a_rpc_grpc_pb");
 const fs = require("fs");
-const grpc = require("grpc");
+const grpc = require("@grpc/grpc-js");
 const {
   UsersClient,
 } = require("passkit-node-sdk/io/core/a_rpc_others_grpc_pb");
