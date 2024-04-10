@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.1.0",
-    "passkit-node-sdk": "^1.0.3",
+    "passkit-node-sdk": "^1.1.97",
     "async": "^1.5.2",
     "google-protobuf": "^3.14.0",
     "image-to-base64": "^2.1.1",
