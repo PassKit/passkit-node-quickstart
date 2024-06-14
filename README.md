@@ -25,11 +25,11 @@ You will need the following:
    - ca-chain.pem
    - key.pem
 
-3. Add the on time password you used to generate your SDK credentials into the `src/config/config.js` PASSPHRASE variable
+3. Add the on time password you used to generate your SDK credentials into the `src/config/config.js` PASSPHRASE variable and check the API region of your account [here](https://app.passkit.com/app/account/developer-tools) and change it accordingly. For Europe/Pub1 use `ADDRESS = "grpc.pub1.passkit.io"` and for USA/Pub2 use `ADDRESS = "grpc.pub2.passkit.io"`.
 
 4. If you wish to receive enrolment emails, edit lines 281 and 307 of the QuickStartLoyalty class to provide an address where you can receive mail.
 
-5. Run `npm i`
+6. Run `npm i`
 
 ### Running the tests
 
