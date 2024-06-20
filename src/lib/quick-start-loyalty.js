@@ -2,13 +2,14 @@ const { ProjectStatus } = require("passkit-node-sdk/io/common/project_pb");
 const {
   DefaultTemplateRequest,
   PassTemplate,
-  PassProtocol,
+  PassProtocol
 } = require("passkit-node-sdk/io/common/template_pb");
 const { MemberEvent } = require("passkit-node-sdk/io/member/member_events_pb");
 const {
   EarnBurnPointsRequest,
   Member,
   MemberCheckInOutRequest,
+  ListRequest
 } = require("passkit-node-sdk/io/member/member_pb");
 const {
   BalanceType,
@@ -16,7 +17,8 @@ const {
   Program,
 } = require("passkit-node-sdk/io/member/program_pb");
 const { Tier } = require("passkit-node-sdk/io/member/tier_pb");
-const Common = require("passkit-node-sdk/io/common/common_objects_pb");
+const { Id } = require("passkit-node-sdk/io/common/common_objects_pb");
+const { FieldFilter, FilterGroup, Filters, Operator } = require("passkit-node-sdk/io/common/filter_pb");
 const {
   ImageData,
   ImageIds,
@@ -49,6 +51,7 @@ class QuickStartLoyalty {
     this.checkOutEvent = new MemberEvent();
     this.imageIds = new ImageIds();
     this.shortCode = "";
+    this.eventsResponse = new MemberEvent();
   }
 
   async runQuickStart() {
@@ -77,6 +80,8 @@ class QuickStartLoyalty {
       await this.checkInMember();
       await this.checkOutMember();
       await this.earnPoints();
+      await this.listMemberEvents();
+      await this.listMembers();
       return "done";
     } catch (error) {
       console.log("Error: ", error);
@@ -209,7 +214,7 @@ class QuickStartLoyalty {
           if (err) {
             reject(err);
           }
-          resolve(callback(response));
+          resolve(response);
         });
     });
   }
@@ -250,6 +255,72 @@ class QuickStartLoyalty {
           reject(err);
         }
         resolve(callback(response));
+      });
+    });
+  }
+
+  listMemberEvents() {
+    console.log("Listing events for member");
+    const memberId = new Id();
+    memberId.setId(this.bronzeMemberId);
+    return new Promise((resolve, reject) => {
+      const memberEvents = this.pkClient.getMembershipClient().listEventsForMember(memberId, (err, response) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+      });
+
+      memberEvents.on('Event data', (data) => {
+        console.log('Received:', data);
+      });
+
+      memberEvents.on('end', () => {
+        console.log('Stream ended');
+      });
+
+      memberEvents.on('error', (err) => {
+        reject(err);
+      });
+    });
+  }
+
+  listMembers() {
+    console.log("listing members");
+    const listRequest = new ListRequest();
+    const filters = new Filters();
+    const filterGroup = new FilterGroup();
+    const fieldFilter = new FieldFilter();
+
+    filterGroup.setCondition(Operator.AND);
+    fieldFilter.setFilterfield("passStatus");
+    fieldFilter.setFiltervalue("PASS_ISSUED");
+    fieldFilter.setFilteroperator("eq");
+
+    filterGroup.setFieldfiltersList([fieldFilter]);
+    filters.setFiltergroupsList([filterGroup]);
+    filters.setLimit(5);
+    listRequest.setFilters(filters);
+    listRequest.setProgramid("4LbguMMAZ8yHvi3b2gn1cF");
+
+    return new Promise((resolve, reject) => {
+      const memberList = this.pkClient.getMembershipClient().listMembers(listRequest, (err, response) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+      });
+
+      memberList.on('List data', (data) => {
+        console.log('Received:', data);
+      });
+
+      memberList.on('end', () => {
+        console.log('Stream ended');
+      });
+
+      memberList.on('error', (err) => {
+        reject(err);
       });
     });
   }
@@ -311,6 +382,11 @@ class QuickStartLoyalty {
           .setEmailaddress("bronze.billy@dummy.passkit.com")
       )
       .setPoints(100);
+    // Set any meta data below, do not include any prefix e.g. 'meta.newDataField12' =  "newDatatField12"
+    // If you are using a static field e.g. 'custom.newDatafield2', this can be set in the template
+    const metadataMap = member.getMetadataMap();
+    metadataMap.set("newDatatField12", "your value");
+    metadataMap.set("newDatatField13", "your value");
 
     return new Promise((resolve, reject) => {
       this.pkClient
