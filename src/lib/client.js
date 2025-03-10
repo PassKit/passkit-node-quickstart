@@ -5,6 +5,8 @@ const {
   ImagesClient
 } = require("passkit-node-sdk/io/core/a_rpc_images_grpc_pb");
 const { MembersClient } = require("passkit-node-sdk/io/member/a_rpc_grpc_pb");
+const { SingleUseCouponsClient } = require("passkit-node-sdk/io/single_use_coupons/a_rpc_grpc_pb");
+const { EventTicketsClient } = require("passkit-node-sdk/io/event_tickets/a_rpc_grpc_pb");
 const fs = require("fs");
 const {
   UsersClient,
@@ -37,6 +39,8 @@ class PassKitClient {
     this.templateClient = new TemplatesClient(grpcAddress, channelCredential);
     this.membersClient = new MembersClient(grpcAddress, channelCredential);
     this.imageClient = new ImagesClient(grpcAddress, channelCredential);
+    this.couponsClient = new SingleUseCouponsClient(grpcAddress, channelCredential);
+    this.ticketsClient = new EventTicketsClient(grpcAddress, channelCredential);
   }
 
   getTemplateClient() {
@@ -45,6 +49,14 @@ class PassKitClient {
 
   getMembershipClient() {
     return this.membersClient;
+  }
+
+  getCouponsClient() {
+    return this.couponsClient;
+  }
+
+  getEventTicketsClient() {
+    return this.ticketsClient;
   }
 
   getImagesClient() {

@@ -4,5 +4,5 @@ module.exports = {
   CERTIFICATE: "./src/certs/certificate.pem",
   ADDRESS: "grpc.pub1.passkit.io",
   PORT: 443,
-  PASSPHRASE: "",
+  PASSPHRASE: "password",
 };
