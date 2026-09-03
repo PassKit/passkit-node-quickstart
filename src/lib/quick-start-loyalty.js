@@ -1,15 +1,29 @@
+const imageToBase64 = require("image-to-base64");
+const { Id } = require("passkit-node-sdk/io/common/common_objects_pb");
+const {
+  FieldFilter,
+  FilterGroup,
+  Filters,
+  Operator,
+} = require("passkit-node-sdk/io/common/filter_pb");
+const { Person } = require("passkit-node-sdk/io/common/personal_pb");
 const { ProjectStatus } = require("passkit-node-sdk/io/common/project_pb");
 const {
   DefaultTemplateRequest,
+  PassProtocol,
   PassTemplate,
-  PassProtocol
 } = require("passkit-node-sdk/io/common/template_pb");
+const {
+  CreateImageInput,
+  ImageData,
+  ImageIds,
+} = require("passkit-node-sdk/io/image/image_pb");
 const { MemberEvent } = require("passkit-node-sdk/io/member/member_events_pb");
 const {
   EarnBurnPointsRequest,
+  ListRequest,
   Member,
   MemberCheckInOutRequest,
-  ListRequest
 } = require("passkit-node-sdk/io/member/member_pb");
 const {
   BalanceType,
@@ -17,28 +31,14 @@ const {
   Program,
 } = require("passkit-node-sdk/io/member/program_pb");
 const { Tier } = require("passkit-node-sdk/io/member/tier_pb");
-const { Id } = require("passkit-node-sdk/io/common/common_objects_pb");
-const { FieldFilter, FilterGroup, Filters, Operator } = require("passkit-node-sdk/io/common/filter_pb");
-const {
-  ImageData,
-  ImageIds,
-  CreateImageInput,
-} = require("passkit-node-sdk/io/image/image_pb");
-const imageToBase64 = require("image-to-base64");
-const { Person } = require("passkit-node-sdk/io/common/personal_pb");
 
-//Single Connection
-//const PassKitGRPC = require("./client");
-//Connection Pooling
-const grpcPool = require("./poolingClient");
 const helper = require("./helpers");
+const runCleanup = require("./cleanup");
 
 class QuickStartLoyalty {
-  constructor() {
-    //Single Connection
-    //this.pkClient = new PassKitGRPC().getInstance();
-    //Connection Pooling
-    this.pkClient = grpcPool.getConnection();
+  constructor(pkClient, options = {}) {
+    this.pkClient = pkClient;
+    this.recipientEmail = options.recipientEmail;
     this.heroImageId = "";
     this.stripImageId = "";
     this.iconId = "";
@@ -90,29 +90,37 @@ class QuickStartLoyalty {
       await this.getMember();
       await this.listMembers();
       await this.listMemberEvents();
-      await this.deleteMember();
       return "done";
     } catch (error) {
-      console.log("Error: ", error);
-      return "done";
+      throw new Error(`Loyalty quickstart failed: ${error.message}`, {
+        cause: error,
+      });
     }
   }
 
   async cleanUp() {
-    try {
-      await this.deleteProgram();
-      await this.deleteTemplate(this.bronzeTemplateId);
-      await this.deleteTemplate(this.silverTemplateId);
-      await this.deleteImage(this.imageIds.getIcon());
-      await this.deleteImage(this.imageIds.getLogo());
-      await this.deleteImage(this.imageIds.getHero());
-      await this.deleteImage(this.imageIds.getStrip());
-      await this.deleteImage(this.imageIds.getApplelogo());
-      return "done";
-    } catch (error) {
-      console.log("Error: ", error);
-      return "done";
-    }
+    return runCleanup([
+      ["program", this.programId, (id) => this.deleteProgram(id)],
+      [
+        "bronze template",
+        this.bronzeTemplateId,
+        (id) => this.deleteTemplate(id),
+      ],
+      [
+        "silver template",
+        this.silverTemplateId,
+        (id) => this.deleteTemplate(id),
+      ],
+      ["icon", this.imageIds.getIcon(), (id) => this.deleteImage(id)],
+      ["logo", this.imageIds.getLogo(), (id) => this.deleteImage(id)],
+      ["hero", this.imageIds.getHero(), (id) => this.deleteImage(id)],
+      ["strip", this.imageIds.getStrip(), (id) => this.deleteImage(id)],
+      [
+        "Apple logo",
+        this.imageIds.getApplelogo(),
+        (id) => this.deleteImage(id),
+      ],
+    ]);
   }
 
   createImages(imageData) {
@@ -125,7 +133,7 @@ class QuickStartLoyalty {
     return new Promise((resolve, reject) => {
       //Single Connection
       //this.pkClient.getImagesClient().createImages(request, (err, response) => {
-      // Connection Pooling    
+      // Connection Pooling
       this.pkClient.imageClient.createImages(request, (err, response) => {
         if (err) {
           reject(err);
@@ -143,11 +151,7 @@ class QuickStartLoyalty {
     const callback = helper.createBronzeResponse.bind(this);
 
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //    .getTemplateClient()
-        // Connection Pooling  
-        .templateClient
+      this.pkClient.templateClient // Connection Pooling //    .getTemplateClient() //Single Connection
         .getDefaultTemplate(request, (err, response) => {
           if (err) {
             reject(err);
@@ -165,11 +169,7 @@ class QuickStartLoyalty {
     const callback = helper.createSilverResponse.bind(this);
 
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //.getTemplateClient()
-        // Connection Pooling  
-        .templateClient
+      this.pkClient.templateClient // Connection Pooling //.getTemplateClient() //Single Connection
         .getDefaultTemplate(request, (err, response) => {
           if (err) {
             reject(err);
@@ -209,11 +209,7 @@ class QuickStartLoyalty {
     const callback = helper.bronzeTemplateResponse.bind(this);
 
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //    .getTemplateClient()
-        // Connection Pooling  
-        .templateClient
+      this.pkClient.templateClient // Connection Pooling //    .getTemplateClient() //Single Connection
         .createTemplate(this.bronzeTemplate, (err, response) => {
           if (err) {
             reject(err);
@@ -228,11 +224,7 @@ class QuickStartLoyalty {
     const callback = helper.silverTemplateResponse.bind(this);
 
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //    .getTemplateClient()
-        // Connection Pooling  
-        .templateClient
+      this.pkClient.templateClient // Connection Pooling //    .getTemplateClient() //Single Connection
         .createTemplate(this.silverTemplate, (err, response) => {
           if (err) {
             reject(err);
@@ -251,15 +243,11 @@ class QuickStartLoyalty {
       .addStatus(ProjectStatus.PROJECT_DRAFT)
       .addStatus(ProjectStatus.PROJECT_ACTIVE_FOR_OBJECT_CREATION)
       .setPointstype(
-        new PointsType().setBalancetype(BalanceType.BALANCE_TYPE_INT)
+        new PointsType().setBalancetype(BalanceType.BALANCE_TYPE_INT),
       );
 
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //.getMembershipClient()
-        // Connection Pooling  
-        .membersClient
+      this.pkClient.membersClient // Connection Pooling //.getMembershipClient() //Single Connection
         .createProgram(program, (err, response) => {
           if (err) {
             reject(err);
@@ -276,12 +264,13 @@ class QuickStartLoyalty {
     const callback = helper.projectResponse.bind(this);
 
     return new Promise((resolve, reject) => {
-      this.pkClient.getUsersClient().getProjectByUuid(shortId, (err, response) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(callback(response));
-      });
+      this.pkClient.userClient //Connection Pooling //.getUsersClient() //Single Connection
+        .getProjectByUuid(shortId, (err, response) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(callback(response));
+        });
     });
   }
 
@@ -294,27 +283,27 @@ class QuickStartLoyalty {
       //Single Connection
       //const eventStream = this.pkClient.getMembershipClient().listEventsForMember(memberId);
 
-      // Connection Pooling  
-      const eventStream = this.pkClient.membersClient.listEventsForMember(memberId);
+      // Connection Pooling
+      const eventStream =
+        this.pkClient.membersClient.listEventsForMember(memberId);
       const events = [];
 
-      eventStream.on('data', (data) => {
-        console.log('Received Event:', data.toObject());
+      eventStream.on("data", (data) => {
+        console.log("Received Event:", data.toObject());
         events.push(data.toObject());
       });
 
-      eventStream.on('end', () => {
-        console.log('Stream ended');
+      eventStream.on("end", () => {
+        console.log("Stream ended");
         resolve(events);
       });
 
-      eventStream.on('error', (err) => {
-        console.error('Stream error:', err);
+      eventStream.on("error", (err) => {
+        console.error("Stream error:", err);
         reject(err);
       });
     });
   }
-
 
   listMembers() {
     console.log("Listing members");
@@ -324,17 +313,12 @@ class QuickStartLoyalty {
       const filters = new Filters();
       const filterGroup = new FilterGroup();
       const fieldFilter = new FieldFilter();
-      const fieldFilter2 = new FieldFilter();
 
       filterGroup.setCondition(Operator.AND);
       fieldFilter.setFilterfield("passStatus");
       fieldFilter.setFiltervalue("PASS_ISSUED");
       fieldFilter.setFilteroperator("eq");
-      fieldFilter2.setFilterfield("id");
-      fieldFilter2.setFiltervalue(this.bronzeMemberId);
-      fieldFilter2.setFilteroperator("eq");
-
-      filterGroup.setFieldfiltersList([fieldFilter, fieldFilter2]);
+      filterGroup.setFieldfiltersList([fieldFilter]);
       filters.setFiltergroupsList([filterGroup]);
       filters.setLimit(-1);
       listRequest.setFilters(filters);
@@ -348,23 +332,22 @@ class QuickStartLoyalty {
 
       const members = [];
 
-      memberStream.on('data', (data) => {
-        console.log('Received Member:', data.toObject());
+      memberStream.on("data", (data) => {
+        console.log("Received Member:", data.toObject());
         members.push(data.toObject());
       });
 
-      memberStream.on('end', () => {
-        console.log('Stream ended');
+      memberStream.on("end", () => {
+        console.log("Stream ended");
         resolve(members);
       });
 
-      memberStream.on('error', (err) => {
-        console.error('Stream error:', err);
+      memberStream.on("error", (err) => {
+        console.error("Stream error:", err);
         reject(err);
       });
     });
   }
-
 
   createBronzeTier() {
     console.log("Creating bronze tier");
@@ -379,11 +362,7 @@ class QuickStartLoyalty {
       .setTimezone("Europe/London");
 
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //.getMembershipClient()
-        // Connection Pooling  
-        .membersClient
+      this.pkClient.membersClient // Connection Pooling //.getMembershipClient() //Single Connection
         .createTier(tier, (err, response) => {
           if (err) {
             reject(err);
@@ -406,11 +385,7 @@ class QuickStartLoyalty {
       .setTimezone("Europe/London");
 
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //.getMembershipClient()
-        // Connection Pooling  
-        .membersClient
+      this.pkClient.membersClient // Connection Pooling //.getMembershipClient() //Single Connection
         .createTier(tier, (err, response) => {
           if (err) {
             reject(err);
@@ -421,7 +396,8 @@ class QuickStartLoyalty {
   }
 
   getProfileImage() {
-    const imageUrl = "https://drive.google.com/uc?id=1TcQ-jCbYVtjlqVMyklLSXpXbch2pL_dV";
+    const imageUrl =
+      "https://drive.google.com/uc?id=1TcQ-jCbYVtjlqVMyklLSXpXbch2pL_dV";
     //const base64Image = await imageToBase64("./src/images/shared/logo.png");
     return imageUrl;
   }
@@ -437,7 +413,9 @@ class QuickStartLoyalty {
       .setPerson(
         new Person()
           .setDisplayname("Bronze Billy")
-          .setEmailaddress("bronze.billy@dummy.passkit.com")
+          .setEmailaddress(
+            this.recipientEmail || "bronze.billy@dummy.passkit.com",
+          ),
       )
       .setPoints(100);
     // Set any meta data below, do not include any prefix e.g. 'meta.newDataField12' =  "newDatatField12"
@@ -447,11 +425,7 @@ class QuickStartLoyalty {
     metadataMap.set("newDatatField13", "your value");
 
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //.getMembershipClient()
-        // Connection Pooling  
-        .membersClient
+      this.pkClient.membersClient // Connection Pooling //.getMembershipClient() //Single Connection
         .enrolMember(member, (err, response) => {
           if (err) {
             reject(err);
@@ -471,15 +445,13 @@ class QuickStartLoyalty {
       .setPerson(
         new Person()
           .setDisplayname("Silver Steve")
-          .setEmailaddress("silver.steve@dummy.passkit.com")
+          .setEmailaddress(
+            this.recipientEmail || "silver.steve@dummy.passkit.com",
+          ),
       );
 
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //.getMembershipClient()
-        // Connection Pooling  
-        .membersClient
+      this.pkClient.membersClient // Connection Pooling //.getMembershipClient() //Single Connection
         .enrolMember(member2, (err, response) => {
           if (err) {
             reject(err);
@@ -505,11 +477,7 @@ class QuickStartLoyalty {
     ]);
 
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //.getMembershipClient()
-        // Connection Pooling  
-        .membersClient
+      this.pkClient.membersClient // Connection Pooling //.getMembershipClient() //Single Connection
         .checkInMember(event, (err, response) => {
           if (err) {
             reject(err);
@@ -537,11 +505,7 @@ class QuickStartLoyalty {
     ]);
 
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //.getMembershipClient()
-        // Connection Pooling  
-        .membersClient
+      this.pkClient.membersClient // Connection Pooling //.getMembershipClient() //Single Connection
         .checkOutMember(event, (err, response) => {
           if (err) {
             reject(err);
@@ -558,11 +522,7 @@ class QuickStartLoyalty {
       .setPoints(10);
 
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //.getMembershipClient()
-        // Connection Pooling  
-        .membersClient
+      this.pkClient.membersClient // Connection Pooling //.getMembershipClient() //Single Connection
         .earnPoints(event, (err) => {
           if (err) {
             reject(err);
@@ -578,11 +538,7 @@ class QuickStartLoyalty {
     deleteId.setId(this.programId);
 
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //.getMembershipClient()
-        // Connection Pooling  
-        .membersClient
+      this.pkClient.membersClient // Connection Pooling //.getMembershipClient() //Single Connection
         .deleteProgram(deleteId, (err) => {
           if (err) {
             reject(err);
@@ -597,18 +553,11 @@ class QuickStartLoyalty {
     const member = new Member();
     member
       .setId(this.bronzeMemberId)
-      .setPerson(
-        new Person()
-          .setDisplayname("Bronze")
-      )
+      .setPerson(new Person().setDisplayname("Bronze"))
       .setPoints(110);
 
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //.getMembershipClient()
-        // Connection Pooling  
-        .membersClient
+      this.pkClient.membersClient // Connection Pooling //.getMembershipClient() //Single Connection
         .updateMember(member, (err) => {
           if (err) {
             reject(err);
@@ -616,20 +565,15 @@ class QuickStartLoyalty {
           resolve();
         });
     });
-
   }
 
   getMember() {
     console.log("Get Member Record");
     const memberId = new Id();
     memberId.setId(this.bronzeMemberId);
-    console.log(memberId.getId)
+    console.log(memberId.getId);
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //.getMembershipClient()
-        // Connection Pooling  
-        .membersClient
+      this.pkClient.membersClient // Connection Pooling //.getMembershipClient() //Single Connection
         .getMemberRecordById(memberId, (err) => {
           if (err) {
             reject(err);
@@ -642,15 +586,10 @@ class QuickStartLoyalty {
   deleteMember() {
     console.log("Delete Member");
     const member = new Member();
-    member
-      .setId(this.bronzeMemberId);
+    member.setId(this.bronzeMemberId);
 
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //.getMembershipClient()
-        // Connection Pooling  
-        .membersClient
+      this.pkClient.membersClient // Connection Pooling //.getMembershipClient() //Single Connection
         .deleteMember(member, (err) => {
           if (err) {
             reject(err);
@@ -666,11 +605,7 @@ class QuickStartLoyalty {
     deleteId.setId(id);
 
     return new Promise((resolve, reject) => {
-      this.pkClient
-        //Single Connection
-        //.getTemplateClient()
-        //Connection Pooling  
-        .templateClient
+      this.pkClient.templateClient //Connection Pooling //.getTemplateClient() //Single Connection
         .deleteTemplate(deleteId, (err) => {
           if (err) {
             reject(err);
@@ -686,10 +621,7 @@ class QuickStartLoyalty {
     deleteId.setId(id);
 
     return new Promise((resolve, reject) => {
-      //Single Connection
-      //this.pkClient.getImagesClient().deleteImages(request, (err, response) => {
-      // Connection Pooling    
-      this.pkClient.imageClient.deleteImages(request, (err, response) => {
+      this.pkClient.imageClient.deleteImage(deleteId, (err) => {
         if (err) {
           reject(err);
         }

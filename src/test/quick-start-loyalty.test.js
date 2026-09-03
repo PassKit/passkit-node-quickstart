@@ -1,6 +1,9 @@
 const QuickStartLoyalty = require("../lib/quick-start-loyalty");
+const createClient = require("../lib/client-factory");
+const { loadConfig, validateConfig } = require("../config/config");
 
-const quickStart = new QuickStartLoyalty();
+const connection = createClient(validateConfig(loadConfig()));
+const quickStart = new QuickStartLoyalty(connection.client);
 
 // Test will hang for two minutes so you can check urls
 jest.setTimeout(120000);
@@ -9,6 +12,7 @@ beforeAll(async () => quickStart.runQuickStart());
 
 afterAll(async () => {
   await quickStart.cleanUp();
+  connection.close();
 });
 
 describe("quick start loyalty", () => {
@@ -45,22 +49,18 @@ describe("quick start loyalty", () => {
     expect(quickStart.checkInEvent).toBeTruthy();
   });
 
-  it("shows urls", async () => {
+  it("shows urls", () => {
     console.log(
       "Enrollment URL: ",
-      `https://pub1.pskt.io/c/${quickStart.shortCode}`
+      `https://pub1.pskt.io/c/${quickStart.shortCode}`,
     );
     console.log(
       "Bronze Pass Url: ",
-      `https://pub1.pskt.io/${quickStart.bronzeMemberId}`
+      `https://pub1.pskt.io/${quickStart.bronzeMemberId}`,
     );
     console.log(
       "Silver Pass Url: ",
-      `https://pub1.pskt.io/${quickStart.silverMemberId}`
+      `https://pub1.pskt.io/${quickStart.silverMemberId}`,
     );
-
-    console.log("Data will be removed in 1 minutes");
-
-    await new Promise((r) => setTimeout(r, 60000));
   });
 });

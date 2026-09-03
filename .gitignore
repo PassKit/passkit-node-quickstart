@@ -1,3 +1,35 @@
-node_modules
-src/certs
-.vscode
+# Dependencies
+node_modules/
+
+# PassKit credentials and local environment configuration
+src/certs/
+.env
+.env.*
+!.env.example
+
+# Test and build output
+coverage/
+dist/
+.nyc_output/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local caches and temporary files
+.cache/
+.eslintcache
+*.tmp
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Operating system files
+.DS_Store
+Thumbs.db

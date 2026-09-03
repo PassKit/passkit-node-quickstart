@@ -115,7 +115,7 @@ exports.createImagesResponse = function (imageIds) {
 
 exports.listEventsResponse = function (eventsResponse) {
   this.eventsResponse = eventsResponse;
-}
+};
 
 exports.transformEventsResponse = function (data) {
   const result = {
@@ -134,7 +134,7 @@ exports.transformEventsResponse = function (data) {
     notes: data.notes,
     date: data.date,
     retainedUntilDate: data.retaineduntildate,
-    created: data.created
+    created: data.created,
   };
 
   const error = {
@@ -144,10 +144,10 @@ exports.transformEventsResponse = function (data) {
       {
         "@type": "string",
         property1: null,
-        property2: null
-      }
-    ]
+        property2: null,
+      },
+    ],
   };
 
   return { result, error };
-}
+};
