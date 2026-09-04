@@ -29,7 +29,7 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.14.4",
     "dotenv": "^17.4.2",
-    "google-protobuf": "^3.21.4",
+    "google-protobuf": "^4.0.2",
     "image-to-base64": "^2.1.1",
     "passkit-node-sdk": "^1.1.162"
   },
