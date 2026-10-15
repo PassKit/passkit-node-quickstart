@@ -27,7 +27,7 @@
     "security": "npm audit --audit-level=high"
   },
   "dependencies": {
-    "@grpc/grpc-js": "^1.14.4",
+    "@grpc/grpc-js": "^1.14.6",
     "dotenv": "^17.4.2",
     "google-protobuf": "^4.0.2",
     "image-to-base64": "^2.1.1",
